@@ -26,21 +26,13 @@ section[data-testid="stSidebar"] {
     font-size: 17px;
 }
 
-.book-card {
-    border: 1px solid #ddd;
-    padding: 15px;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-.info-text {
-    font-size: 14px;
-    color: gray;
+.block-container {
+    padding-top: 2rem;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- 데이터 불러오기 ----------------
+# ---------------- 데이터 ----------------
 books_df = pd.read_csv("books.csv")
 books = books_df.to_dict(orient="records")
 
@@ -75,7 +67,9 @@ if st.session_state.page == "home":
 
     st.write("도서와 문제집을 자유롭게 공유해보세요!")
 
-# ---------------- 도서 ----------------
+# =====================================================
+# 도서 목록 페이지
+# =====================================================
 elif st.session_state.page == "books":
 
     st.title("📚 도서 목록")
@@ -117,86 +111,104 @@ elif st.session_state.page == "books":
 
             st.caption(f"👤 {book['info']}")
 
-            if st.button(book["title"], key=f"book{i}"):
+            if st.button(
+                book["title"],
+                key=f"book{i}"
+            ):
 
                 st.session_state.selected_book = book
+                st.session_state.page = "book_detail"
 
-    # 상세 페이지
-    if st.session_state.selected_book:
+                st.rerun()
 
-        book = st.session_state.selected_book
+# =====================================================
+# 도서 상세 페이지
+# =====================================================
+elif st.session_state.page == "book_detail":
 
-        st.divider()
+    book = st.session_state.selected_book
 
-        col1, col2 = st.columns([1,2])
+    if st.button("← 목록으로"):
 
-        with col1:
-            st.image(book["image"], width=250)
+        st.session_state.page = "books"
+        st.rerun()
 
-        with col2:
+    col1, col2 = st.columns([1,2])
 
-            st.title(book["title"])
+    with col1:
+        st.image(book["image"], width=300)
 
-            st.write(f"✍ 저자: {book['writer']}")
-            st.write(f"📂 계열: {book['category']}")
-            st.write(f"📖 설명: {book['desc']}")
+    with col2:
 
-            if book["status"] == "available":
+        st.title(book["title"])
 
-                renter = st.text_input(
-                    "반번호 이름 입력",
-                    key="book_renter"
-                )
+        st.write(f"✍ 저자: {book['writer']}")
+        st.write(f"📂 계열: {book['category']}")
+        st.write(f"📖 설명: {book['desc']}")
 
-                if st.button("대여하기", key="rent_book"):
+        if book["status"] == "available":
 
-                    if renter:
+            renter = st.text_input(
+                "반번호 이름 입력",
+                key="book_renter"
+            )
 
-                        for b in books:
-                            if b["title"] == book["title"]:
-                                b["status"] = "rented"
+            if st.button("대여하기"):
 
-                        pd.DataFrame(books).to_csv(
-                            "books.csv",
-                            index=False
+                if renter:
+
+                    for b in books:
+
+                        if b["title"] == book["title"]:
+                            b["status"] = "rented"
+
+                    pd.DataFrame(books).to_csv(
+                        "books.csv",
+                        index=False
+                    )
+
+                    rental = {
+                        "name": renter,
+                        "item": book["title"],
+                        "time": datetime.now()
+                    }
+
+                    try:
+                        rentals = pd.read_csv(
+                            "rentals.csv"
                         )
 
-                        rental = {
-                            "name": renter,
-                            "item": book["title"],
-                            "time": datetime.now()
-                        }
+                    except:
 
-                        try:
-                            rentals = pd.read_csv("rentals.csv")
-                        except:
-                            rentals = pd.DataFrame(
-                                columns=["name","item","time"]
-                            )
-
-                        rentals.loc[len(rentals)] = rental
-
-                        rentals.to_csv(
-                            "rentals.csv",
-                            index=False
+                        rentals = pd.DataFrame(
+                            columns=[
+                                "name",
+                                "item",
+                                "time"
+                            ]
                         )
 
-                        st.success(
-                            f"✅ {renter}님, 대여가 완료되었습니다!"
-                        )
+                    rentals.loc[len(rentals)] = rental
 
-                        st.info(
-                            "📌 도서가 대여 처리되었습니다."
-                        )
+                    rentals.to_csv(
+                        "rentals.csv",
+                        index=False
+                    )
 
-                        time.sleep(3)
+                    st.success(
+                        f"✅ {renter}님, 대여가 완료되었습니다!"
+                    )
 
-                        st.rerun()
+                    time.sleep(3)
 
-            else:
-                st.error("🚫 대여 불가")
+                    st.rerun()
 
-# ---------------- 문제집 ----------------
+        else:
+            st.error("🚫 대여 불가")
+
+# =====================================================
+# 문제집 목록 페이지
+# =====================================================
 elif st.session_state.page == "problems":
 
     st.title("📘 문제집 목록")
@@ -206,7 +218,10 @@ elif st.session_state.page == "problems":
         ["전체"] + list(problems_df["subject"].unique())
     )
 
-    search = st.text_input("🔍 검색", key="problem_search")
+    search = st.text_input(
+        "🔍 검색",
+        key="problem_search"
+    )
 
     sort_option = st.selectbox(
         "정렬",
@@ -255,84 +270,101 @@ elif st.session_state.page == "problems":
 
             st.caption(f"📚 {p['subject']}")
 
-            if st.button(p["type"], key=f"problem{i}"):
+            if st.button(
+                p["type"],
+                key=f"problem{i}"
+            ):
 
                 st.session_state.selected_problem = p
+                st.session_state.page = "problem_detail"
 
-    # 상세 페이지
-    if st.session_state.selected_problem:
+                st.rerun()
 
-        p = st.session_state.selected_problem
+# =====================================================
+# 문제집 상세 페이지
+# =====================================================
+elif st.session_state.page == "problem_detail":
 
-        st.divider()
+    p = st.session_state.selected_problem
 
-        col1, col2 = st.columns([1,2])
+    if st.button("← 목록으로"):
 
-        with col1:
-            st.image(p["image"], width=250)
+        st.session_state.page = "problems"
 
-        with col2:
+        st.rerun()
 
-            st.title(p["type"])
+    col1, col2 = st.columns([1,2])
 
-            st.write(f"📚 과목: {p['subject']}")
-            st.write(f"📅 개정년도: {p['year']}")
+    with col1:
+        st.image(p["image"], width=300)
 
-            if p["status"] == "available":
+    with col2:
 
-                renter = st.text_input(
-                    "반번호 이름 입력",
-                    key="problem_renter"
-                )
+        st.title(p["type"])
 
-                if st.button(
-                    "대여하기",
-                    key="rent_problem"
-                ):
+        st.write(f"📚 과목: {p['subject']}")
+        st.write(f"📅 개정년도: {p['year']}")
 
-                    if renter:
+        if p["status"] == "available":
 
-                        for item in problems:
+            renter = st.text_input(
+                "반번호 이름 입력",
+                key="problem_renter"
+            )
 
-                            if item["type"] == p["type"]:
-                                item["status"] = "rented"
+            if st.button(
+                "대여하기",
+                key="rent_problem"
+            ):
 
-                        pd.DataFrame(problems).to_csv(
-                            "problems.csv",
-                            index=False
+                if renter:
+
+                    for item in problems:
+
+                        if item["type"] == p["type"]:
+                            item["status"] = "rented"
+
+                    pd.DataFrame(problems).to_csv(
+                        "problems.csv",
+                        index=False
+                    )
+
+                    rental = {
+                        "name": renter,
+                        "item": p["type"],
+                        "time": datetime.now()
+                    }
+
+                    try:
+
+                        rentals = pd.read_csv(
+                            "rentals.csv"
                         )
 
-                        rental = {
-                            "name": renter,
-                            "item": p["type"],
-                            "time": datetime.now()
-                        }
+                    except:
 
-                        try:
-                            rentals = pd.read_csv("rentals.csv")
-                        except:
-                            rentals = pd.DataFrame(
-                                columns=["name","item","time"]
-                            )
-
-                        rentals.loc[len(rentals)] = rental
-
-                        rentals.to_csv(
-                            "rentals.csv",
-                            index=False
+                        rentals = pd.DataFrame(
+                            columns=[
+                                "name",
+                                "item",
+                                "time"
+                            ]
                         )
 
-                        st.success(
-                            f"✅ {renter}님, 대여가 완료되었습니다!"
-                        )
+                    rentals.loc[len(rentals)] = rental
 
-                        st.info(
-                            "📌 문제집이 대여 처리되었습니다."
-                        )
+                    rentals.to_csv(
+                        "rentals.csv",
+                        index=False
+                    )
 
-                        time.sleep(3)
+                    st.success(
+                        f"✅ {renter}님, 대여가 완료되었습니다!"
+                    )
 
-                        st.rerun()
+                    time.sleep(3)
 
-            else:
-                st.error("🚫 대여 불가")
+                    st.rerun()
+
+        else:
+            st.error("🚫 대여 불가")
