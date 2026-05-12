@@ -60,7 +60,9 @@ with st.sidebar:
     if st.button("문제집", use_container_width=True):
         st.session_state.page = "problems"
 
-# ---------------- 홈 ----------------
+# =====================================================
+# 홈
+# =====================================================
 if st.session_state.page == "home":
 
     st.title("📚 YCC 도서 공유 시스템")
@@ -68,7 +70,7 @@ if st.session_state.page == "home":
     st.write("도서와 문제집을 자유롭게 공유해보세요!")
 
 # =====================================================
-# 도서 목록 페이지
+# 도서 목록
 # =====================================================
 elif st.session_state.page == "books":
 
@@ -85,6 +87,7 @@ elif st.session_state.page == "books":
 
     # 검색
     if search:
+
         filtered_books = [
             b for b in filtered_books
             if search.lower() in b["title"].lower()
@@ -93,13 +96,19 @@ elif st.session_state.page == "books":
 
     # 정렬
     if sort_option == "가나다순":
+
         filtered_books = sorted(
             filtered_books,
             key=lambda x: x["title"]
         )
 
     elif sort_option == "최신순":
-        filtered_books = list(reversed(filtered_books))
+
+        filtered_books = sorted(
+            filtered_books,
+            key=lambda x: x["title"],
+            reverse=True
+        )
 
     cols = st.columns(4)
 
@@ -131,6 +140,7 @@ elif st.session_state.page == "book_detail":
     if st.button("← 목록으로"):
 
         st.session_state.page = "books"
+
         st.rerun()
 
     col1, col2 = st.columns([1,2])
@@ -174,6 +184,7 @@ elif st.session_state.page == "book_detail":
                     }
 
                     try:
+
                         rentals = pd.read_csv(
                             "rentals.csv"
                         )
@@ -207,7 +218,7 @@ elif st.session_state.page == "book_detail":
             st.error("🚫 대여 불가")
 
 # =====================================================
-# 문제집 목록 페이지
+# 문제집 목록
 # =====================================================
 elif st.session_state.page == "problems":
 
@@ -258,7 +269,11 @@ elif st.session_state.page == "problems":
 
     elif sort_option == "최신순":
 
-        filtered = list(reversed(filtered))
+        filtered = sorted(
+            filtered,
+            key=lambda x: x["type"],
+            reverse=True
+        )
 
     cols = st.columns(4)
 
@@ -367,4 +382,4 @@ elif st.session_state.page == "problem_detail":
                     st.rerun()
 
         else:
-            st.error("🚫 대여 불가")
+            st.error("🚫 대여 불가")                
