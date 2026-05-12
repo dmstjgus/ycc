@@ -129,10 +129,10 @@ elif st.session_state.page == "books":
 
     search = st.text_input("🔍 검색")
 
-    sort_option = st.selectbox(
+    sort_option = st.radio(
         "정렬",
-        options=["기본", "가나다순", "최신순"],
-        index=0
+        ["기본", "가나다순", "최신순"],
+        horizontal=True
     )
 
     filtered_books = books.copy()
@@ -293,10 +293,10 @@ elif st.session_state.page == "problems":
         key="problem_search"
     )
 
-    sort_option = st.selectbox(
+    sort_option = st.radio(
         "정렬",
-        options=["기본", "가나다순", "최신순"],
-        index=0,
+        ["기본", "가나다순", "최신순"],
+        horizontal=True,
         key="problem_sort"
     )
 
