@@ -299,9 +299,10 @@ elif st.session_state.page == "problems":
 
     st.title("📘 문제집 목록")
 
-    subject_filter = st.selectbox(
+    subject_filter = st.radio(
         "과목 선택",
-        ["전체"] + list(problems_df["subject"].unique())
+        ["전체"] + list(problems_df["subject"].unique()),
+        horizontal=True
     )
 
     search = st.text_input(
@@ -475,5 +476,3 @@ elif st.session_state.page == "problem_detail":
 
         else:
             st.error("🚫 대여 불가")
-        
-        
