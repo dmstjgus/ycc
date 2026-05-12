@@ -110,25 +110,32 @@ elif st.session_state.page == "books":
             reverse=True
         )
 
-    cols = st.columns(4)
+    # 검색 결과 없음
+    if len(filtered_books) == 0:
 
-    for i, book in enumerate(filtered_books):
+        st.info("📚 해당 도서를 찾을 수 없습니다.")
 
-        with cols[i % 4]:
+    else:
 
-            st.image(book["image"])
+        cols = st.columns(4)
 
-            st.caption(f"👤 {book['info']}")
+        for i, book in enumerate(filtered_books):
 
-            if st.button(
-                book["title"],
-                key=f"book{i}"
-            ):
+            with cols[i % 4]:
 
-                st.session_state.selected_book = book
-                st.session_state.page = "book_detail"
+                st.image(book["image"])
 
-                st.rerun()
+                st.caption(f"👤 {book['info']}")
+
+                if st.button(
+                    book["title"],
+                    key=f"book{i}"
+                ):
+
+                    st.session_state.selected_book = book
+                    st.session_state.page = "book_detail"
+
+                    st.rerun()
 
 # =====================================================
 # 도서 상세 페이지
@@ -275,25 +282,32 @@ elif st.session_state.page == "problems":
             reverse=True
         )
 
-    cols = st.columns(4)
+    # 검색 결과 없음
+    if len(filtered) == 0:
 
-    for i, p in enumerate(filtered):
+        st.info("📘 해당 문제집을 찾을 수 없습니다.")
 
-        with cols[i % 4]:
+    else:
 
-            st.image(p["image"])
+        cols = st.columns(4)
 
-            st.caption(f"📚 {p['subject']}")
+        for i, p in enumerate(filtered):
 
-            if st.button(
-                p["type"],
-                key=f"problem{i}"
-            ):
+            with cols[i % 4]:
 
-                st.session_state.selected_problem = p
-                st.session_state.page = "problem_detail"
+                st.image(p["image"])
 
-                st.rerun()
+                st.caption(f"📚 {p['subject']}")
+
+                if st.button(
+                    p["type"],
+                    key=f"problem{i}"
+                ):
+
+                    st.session_state.selected_problem = p
+                    st.session_state.page = "problem_detail"
+
+                    st.rerun()
 
 # =====================================================
 # 문제집 상세 페이지
@@ -382,4 +396,4 @@ elif st.session_state.page == "problem_detail":
                     st.rerun()
 
         else:
-            st.error("🚫 대여 불가")                
+            st.error("🚫 대여 불가")
