@@ -65,9 +65,60 @@ with st.sidebar:
 # =====================================================
 if st.session_state.page == "home":
 
-    st.title("📚 YCC 도서 공유 시스템")
+    st.markdown(
+        """
+        # 📚 YCC 도서 공유 시스템
 
-    st.write("도서와 문제집을 자유롭게 공유해보세요!")
+        ### 선후배가 함께 만드는 도서 공유 플랫폼
+
+        책과 문제집을 자유롭게 공유하고  
+        필요한 자료를 쉽게 대여해보세요.
+        """
+    )
+
+    st.divider()
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.markdown("## 📖 도서")
+
+        st.write(
+            "다양한 분야의 도서를 검색하고 대여할 수 있습니다."
+        )
+
+        if st.button(
+            "도서 보러가기",
+            use_container_width=True
+        ):
+
+            st.session_state.page = "books"
+
+            st.rerun()
+
+    with col2:
+
+        st.markdown("## 📘 문제집")
+
+        st.write(
+            "과목별 문제집을 검색하고 대여할 수 있습니다."
+        )
+
+        if st.button(
+            "문제집 보러가기",
+            use_container_width=True
+        ):
+
+            st.session_state.page = "problems"
+
+            st.rerun()
+
+    st.divider()
+
+    st.info(
+        "💡 원하는 자료가 없다면 선배들에게 기증받아 함께 공유해보세요!"
+    )
 
 # =====================================================
 # 도서 목록
@@ -80,7 +131,8 @@ elif st.session_state.page == "books":
 
     sort_option = st.selectbox(
         "정렬",
-        ["기본", "가나다순", "최신순"]
+        options=["기본", "가나다순", "최신순"],
+        index=0
     )
 
     filtered_books = books.copy()
@@ -243,7 +295,8 @@ elif st.session_state.page == "problems":
 
     sort_option = st.selectbox(
         "정렬",
-        ["기본", "가나다순", "최신순"],
+        options=["기본", "가나다순", "최신순"],
+        index=0,
         key="problem_sort"
     )
 
