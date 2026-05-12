@@ -29,6 +29,13 @@ section[data-testid="stSidebar"] {
 .block-container {
     padding-top: 4rem;
 }
+
+/* 행 구분선 */
+.row-divider {
+    border-top: 1px solid #dddddd;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -169,25 +176,34 @@ elif st.session_state.page == "books":
 
     else:
 
-        cols = st.columns(4)
+        for row_start in range(0, len(filtered_books), 4):
 
-        for i, book in enumerate(filtered_books):
+            row_books = filtered_books[row_start:row_start + 4]
 
-            with cols[i % 4]:
+            cols = st.columns(4)
 
-                st.image(book["image"])
+            for i, book in enumerate(row_books):
 
-                st.caption(f"👤 {book['info']}")
+                with cols[i]:
 
-                if st.button(
-                    book["title"],
-                    key=f"book{i}"
-                ):
+                    st.image(book["image"])
 
-                    st.session_state.selected_book = book
-                    st.session_state.page = "book_detail"
+                    st.caption(f"👤 {book['info']}")
 
-                    st.rerun()
+                    if st.button(
+                        book["title"],
+                        key=f"book{row_start+i}"
+                    ):
+
+                        st.session_state.selected_book = book
+                        st.session_state.page = "book_detail"
+
+                        st.rerun()
+
+            st.markdown(
+                '<div class="row-divider"></div>',
+                unsafe_allow_html=True
+            )
 
 # =====================================================
 # 도서 상세 페이지
@@ -342,25 +358,34 @@ elif st.session_state.page == "problems":
 
     else:
 
-        cols = st.columns(4)
+        for row_start in range(0, len(filtered), 4):
 
-        for i, p in enumerate(filtered):
+            row_items = filtered[row_start:row_start + 4]
 
-            with cols[i % 4]:
+            cols = st.columns(4)
 
-                st.image(p["image"])
+            for i, p in enumerate(row_items):
 
-                st.caption(f"📚 {p['subject']}")
+                with cols[i]:
 
-                if st.button(
-                    p["type"],
-                    key=f"problem{i}"
-                ):
+                    st.image(p["image"])
 
-                    st.session_state.selected_problem = p
-                    st.session_state.page = "problem_detail"
+                    st.caption(f"📚 {p['subject']}")
 
-                    st.rerun()
+                    if st.button(
+                        p["type"],
+                        key=f"problem{row_start+i}"
+                    ):
+
+                        st.session_state.selected_problem = p
+                        st.session_state.page = "problem_detail"
+
+                        st.rerun()
+
+            st.markdown(
+                '<div class="row-divider"></div>',
+                unsafe_allow_html=True
+            )
 
 # =====================================================
 # 문제집 상세 페이지
@@ -450,3 +475,5 @@ elif st.session_state.page == "problem_detail":
 
         else:
             st.error("🚫 대여 불가")
+        
+        
