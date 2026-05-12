@@ -27,7 +27,7 @@ section[data-testid="stSidebar"] {
 }
 
 .block-container {
-    padding-top: 2rem;
+    padding-top: 4rem;
 }
 </style>
 """, unsafe_allow_html=True)
